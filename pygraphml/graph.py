@@ -17,7 +17,7 @@ class Graph:
     :param name: name of the graph
     """
 
-    def __init__(self, name=""):
+    def __init__(self, name="", parent=None):
         """
         """
 
@@ -26,9 +26,19 @@ class Graph:
         self._nodes = []
         self._edges = []
         self._root = None
+        self._parent_node = parent
         self.directed = True
 
         self.i = 0
+        
+    def parent_graph(self, ):
+        if self._parent_node is None:
+            return None
+        else:
+            return self._parent_node.graph()
+    
+    def parent_node(self, ):
+        return self._parent_node
 
     def DFS_prefix(self, root=None):
         """
@@ -122,9 +132,12 @@ class Graph:
         """
         """
 
-        n = Node()
+        n = Node(self)
         n['label'] = label
         self._nodes.append(n)
+        
+        if self.parent_graph() is not None:
+            self.parent_graph().nodes().append(n)
 
         return n
 

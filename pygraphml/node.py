@@ -12,13 +12,24 @@ class Node(Item):
     """
     """
 
-    def __init__(self):
+    def __init__(self, graph):
         """
         """
 
         super(Node, self).__init__()
 
         self._edges = []
+        self._graph = graph
+        self._child_graph = None
+        
+    def graph(self):
+        return self._graph
+        
+    def child_graph(self):
+        return self._child_graph
+    
+    def set_child_graph(self, graph):
+        self._child_graph = graph
 
     def edges(self, ):
         """

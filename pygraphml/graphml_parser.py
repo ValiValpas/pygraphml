@@ -76,6 +76,57 @@ class GraphMLParser:
 
         f = open(fname, 'w')
         f.write(doc.toprettyxml(indent = '    '))
+        
+    def set_default_keys(self, obj, keytype, keys):
+        for key in keys.values():
+            if key.getAttribute("for") == keytype:
+                default = key.getElementsByTagName("default")[0]
+                if default.firstChild:
+                    obj[key.getAttribute("id")] = default.firstChild.data
+                else:
+                    obj[key.getAttribute("id")] = ""
+                
+    def parse_attributes(self, obj, element):
+        for attr in element.childNodes:
+            if isinstance(attr, minidom.Element):
+                if attr.tagName == "data":
+                    if attr.firstChild:
+                        obj[attr.getAttribute("key")] = attr.firstChild.data
+                    else:
+                        obj[attr.getAttribute("key")] = ""
+        
+    def parse_graph(self, source, target, keys):
+        """
+        """
+        
+        graph = source
+        g = target
+
+        # Get nodes
+        for node in graph.childNodes:
+            if isinstance(node, minidom.Element):
+                if node.tagName == "node":
+                    n = g.add_node(node.getAttribute('id'))
+                    self.set_default_keys(n, "node", keys)
+                    self.parse_attributes(n, node)
+                    
+                    # parse subgraph if present
+                    elements = node.getElementsByTagName("graph")
+                    if elements:
+                        name = elements[0].getAttribute('id')
+                        n.set_child_graph(Graph(name, n))
+                        self.parse_graph(elements[0], n.child_graph(), keys)
+
+        # Get edges
+        for edge in graph.childNodes:
+            if isinstance(edge, minidom.Element):
+                if edge.tagName == "edge":
+                    source = edge.getAttribute('source')
+                    dest = edge.getAttribute('target')
+                    e = g.add_edge_by_label(source, dest)
+                    self.set_default_keys(e, "edge", keys)
+                    self.parse_attributes(e, edge)
+
 
     def parse(self, fname):
         """
@@ -86,34 +137,14 @@ class GraphMLParser:
         graph = root.getElementsByTagName("graph")[0]
         name = graph.getAttribute('id')
 
+        # Get keys
+        keys = dict()
+        for key in root.getElementsByTagName("key"):
+            keys[key.getAttribute("id")] = key
+
         g = Graph(name)
 
-        # # Get attributes
-        # attributes = []
-        # for attr in root.getElementsByTagName("key"):
-        #     attributes.append(attr)
-
-        # Get nodes
-        for node in graph.getElementsByTagName("node"):
-            n = g.add_node(node.getAttribute('id'))
-
-            for attr in node.getElementsByTagName("data"):
-                if attr.firstChild:
-                    n[attr.getAttribute("key")] = attr.firstChild.data
-                else:
-                    n[attr.getAttribute("key")] = ""
-
-        # Get edges
-        for edge in graph.getElementsByTagName("edge"):
-            source = edge.getAttribute('source')
-            dest = edge.getAttribute('target')
-            e = g.add_edge_by_label(source, dest)
-
-            for attr in edge.getElementsByTagName("data"):
-                if attr.firstChild:
-                    e[attr.getAttribute("key")] = attr.firstChild.data
-                else:
-                    e[attr.getAttribute("key")] = ""
+        self.parse_graph(graph, g, keys)
 
         return g
 
