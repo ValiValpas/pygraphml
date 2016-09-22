@@ -20,7 +20,7 @@ class GraphMLParser:
         """
         """
 
-    def write(self, graph, fname):
+    def write(self, graph, fname, node_defaults=dict(), edge_defaults=dict()):
         """
         """
 
@@ -38,6 +38,10 @@ class GraphMLParser:
             attr_node.setAttribute('attr.name', a.name)
             attr_node.setAttribute('attr.type', a.type)
             root.appendChild(attr_node)
+            if a.name in node_defaults:
+                default = doc.createElement('default')
+                default.appendChild(doc.createTextNode(node_defaults[a.name]))
+                attr_node.appendChild(default)
 
         for a in graph.get_edge_attributes():
             if (a.name == "id"): continue
@@ -47,6 +51,10 @@ class GraphMLParser:
             attr_node.setAttribute('attr.name', a.name)
             attr_node.setAttribute('attr.type', a.type)
             root.appendChild(attr_node)
+            if a.name in edge_defaults:
+                default = doc.createElement('default')
+                default.appendChild(doc.createTextNode(edge_defaults[a.name]))
+                attr_node.appendChild(default)
 
         graph_node = doc.createElement('graph')
         graph_node.setAttribute('id', graph.name)
@@ -90,7 +98,7 @@ class GraphMLParser:
         
     def set_default_keys(self, obj, keytype, keys):
         for key in keys.values():
-            if key.getAttribute("for") == keytype:
+            if key.getAttribute("for") == keytype and key.firstChild:
                 default = key.getElementsByTagName("default")[0]
                 if default.firstChild:
                     obj[key.getAttribute("id")] = default.firstChild.data
