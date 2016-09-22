@@ -143,6 +143,8 @@ class GraphMLParser:
                     source = edge.getAttribute('source')
                     dest = edge.getAttribute('target')
                     e = g.add_edge_by_id(source, dest)
+                    if e is None:
+                        print("Could not find node '%s' or '%s'." % (source, dest))
                     self.set_default_keys(e, "edge", keys)
                     self.parse_attributes(e, edge)
 
