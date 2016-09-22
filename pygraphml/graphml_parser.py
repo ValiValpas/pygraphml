@@ -29,9 +29,20 @@ class GraphMLParser:
         root = doc.createElement('graphml')
         doc.appendChild(root)
 
-        # Add attributs
-        for a in graph.get_attributs():
+        # Add attributes
+        for a in graph.get_node_attributes():
+            if (a.name == "id"): continue
             attr_node = doc.createElement('key')
+            attr_node.setAttribute('for', 'node')
+            attr_node.setAttribute('id', a.name)
+            attr_node.setAttribute('attr.name', a.name)
+            attr_node.setAttribute('attr.type', a.type)
+            root.appendChild(attr_node)
+
+        for a in graph.get_edge_attributes():
+            if (a.name == "id"): continue
+            attr_node = doc.createElement('key')
+            attr_node.setAttribute('for', 'edge')
             attr_node.setAttribute('id', a.name)
             attr_node.setAttribute('attr.name', a.name)
             attr_node.setAttribute('attr.type', a.type)
@@ -49,9 +60,9 @@ class GraphMLParser:
         for n in graph.nodes():
 
             node = doc.createElement('node')
-            node.setAttribute('id', n['label'])
+            node.setAttribute('id', n['id'])
             for a in n.attributes():
-                if a != 'label':
+                if a != 'id':
                     data = doc.createElement('data')
                     data.setAttribute('key', a)
                     data.appendChild(doc.createTextNode(str(n[a])))
@@ -62,12 +73,12 @@ class GraphMLParser:
         for e in graph.edges():
 
             edge = doc.createElement('edge')
-            edge.setAttribute('source', e.node1['label'])
-            edge.setAttribute('target', e.node2['label'])
+            edge.setAttribute('source', e.node1['id'])
+            edge.setAttribute('target', e.node2['id'])
             if e.directed() != graph.directed:
                 edge.setAttribute('directed', 'true' if e.directed() else 'false')
             for a in e.attributes():
-                if e != 'label':
+                if e != 'id':
                     data = doc.createElement('data')
                     data.setAttribute('key', a)
                     data.appendChild(doc.createTextNode(e[a]))
@@ -123,7 +134,7 @@ class GraphMLParser:
                 if edge.tagName == "edge":
                     source = edge.getAttribute('source')
                     dest = edge.getAttribute('target')
-                    e = g.add_edge_by_label(source, dest)
+                    e = g.add_edge_by_id(source, dest)
                     self.set_default_keys(e, "edge", keys)
                     self.parse_attributes(e, edge)
 

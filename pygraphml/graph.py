@@ -134,12 +134,12 @@ class Graph:
 
         return node.targets()
 
-    def add_node(self, label=""):
+    def add_node(self, nid=""):
         """
         """
 
         n = Node(self)
-        n['label'] = label
+        n['id'] = nid
         self._nodes.append(n)
         
         if self.parent_graph() is not None:
@@ -161,7 +161,7 @@ class Graph:
 
         return e
 
-    def add_edge_by_label(self, label1, label2):
+    def add_edge_by_id(self, id1, id2):
         """
         """
 
@@ -169,9 +169,9 @@ class Graph:
         n2 = None
 
         for n in self._nodes:
-            if n['label'] == label1:
+            if n['id'] == id1:
                 n1 = n
-            if n['label'] == label2:
+            if n['id'] == id2:
                 n2 = n
 
         if n1 and n2:
@@ -191,7 +191,7 @@ class Graph:
 
         return self._root
 
-    def set_root_by_attribute(self, value, attribute='label'):
+    def set_root_by_attribute(self, value, attribute='id'):
         """
         """
 
@@ -200,7 +200,7 @@ class Graph:
                 self.set_root(n)
                 return n
 
-    def get_attributs(self):
+    def get_node_attributes(self):
         """
         """
 
@@ -212,6 +212,14 @@ class Graph:
                     attr.append(a)
                     attr_obj.append(n.attr[a])
 
+        return attr_obj
+
+    def get_edge_attributes(self):
+        """
+        """
+
+        attr = []
+        attr_obj = []
         for e in self.edges():
             for a in e.attr:
                 if a not in attr:
@@ -219,7 +227,6 @@ class Graph:
                     attr_obj.append(e.attr[a])
 
         return attr_obj
-
 
     def show(self, show_label=False):
         """
@@ -234,19 +241,19 @@ class Graph:
 
         for n in self._nodes:
             if show_label:
-                n_label = n['label']
+                n_id = n['id']
             else:
-                n_label = n.id
-            G.add_node(n_label)
+                n_id = n.id
+            G.add_node(n_id)
 
         for e in self._edges:
             if show_label:
-                n1_label = e.node1['label']
-                n2_label = e.node2['label']
+                n1_id = e.node1['id']
+                n2_id = e.node2['id']
             else:
-                n1_label = e.node1.id
-                n2_label = e.node2.id
-            G.add_edge(n1_label, n2_label)
+                n1_id = e.node1.id
+                n2_id = e.node2.id
+            G.add_edge(n1_id, n2_id)
 
         nx.draw(G)
 
@@ -266,22 +273,22 @@ class NoDupesGraph(Graph):
     def nodes(self):
         return self._nodes.values()
 
-    def add_node(self,label):
-      '''Return a node with label. Create node if label is new'''
+    def add_node(self,nid):
+      '''Return a node with id. Create node if id is new'''
       try:
-          n = self._nodes[label]
+          n = self._nodes[nid]
       except KeyError:
           n = Node()
-          n['label'] = label
-          self._nodes[label]=n
+          n['id'] = nid
+          self._nodes[nid]=n
       return n
 
-    def add_edge(self, n1_label, n2_label,directed=False):
+    def add_edge(self, n1_id, n2_id,directed=False):
       """
       Get or create edges using get_or_create_node
       """
-      n1 = self.add_node(n1_label)
-      n2 = self.add_node(n2_label)
+      n1 = self.add_node(n1_id)
+      n2 = self.add_node(n2_id)
       e = Edge(n1, n2, directed)
       self._edges.append(e)
       return e
@@ -307,20 +314,20 @@ if __name__ == '__main__':
 
     def no_dupes_test():
      graph = NoDupesGraph()
-     n0 = graph.add_node(label='first')
+     n0 = graph.add_node(nid='first')
      for x in range (20000):
         x = str(random.random())
-        n1 = graph.add_node(label=x)
-        graph.add_edge(n0['label'],n1['label'])
+        n1 = graph.add_node(nid=x)
+        graph.add_edge(n0['id'],n1['id'])
         n0=n1
      #parser.write(graph,'/dev/null')
 
     def vanilla_graph_test():
      graph = Graph()
-     n0 = graph.add_node(label='first')
+     n0 = graph.add_node(nid='first')
      for x in range (20000):
         x = str(random.random())
-        n1 = graph.add_node(label=x)
+        n1 = graph.add_node(nid=x)
         graph.add_edge(n0,n1)
         n0=n1
      #parser.write(graph,'/dev/null')
