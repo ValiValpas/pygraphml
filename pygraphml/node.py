@@ -37,26 +37,36 @@ class Node(Item):
 
         return self._edges
 
-
-    def children(self):
+    def outedges(self):
         """
         """
 
-        children = []
+        outedges = []
         for e in self._edges:
-            if e.parent() == self:
-                children.append(e.child())
+            if e.source() == self:
+                outedges.append(e)
 
-        return children
+        return outedges
 
-    def parent(self):
+    def inedges(self):
         """
         """
 
-        parent = []
+        inedges = []
         for e in self._edges:
-            if e.child() == self:
-                parent.append(e.parent())
+            if e.target() == self:
+                inedges.append(e)
 
-        return parent
+        return inedges
 
+    def targets(self):
+        """
+        """
+
+        return [x.target() for x in self.outedges()]
+
+    def sources(self):
+        """
+        """
+
+        return [x.source() for x in self.inedges()]

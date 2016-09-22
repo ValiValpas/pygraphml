@@ -38,13 +38,13 @@ class Edge(Item):
         else:
             return None
 
-    def parent(self):
+    def source(self):
         """
         """
 
         return self.node1
 
-    def child(self):
+    def target(self):
         """
         """
 

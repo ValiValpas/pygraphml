@@ -56,14 +56,14 @@ class Graph:
 
         return self._DFS_prefix(root)
 
-    def _DFS_prefix(self, n, parent=None):
+    def _DFS_prefix(self, n):
         """
         """
 
         nodes = [n]
         n['depth'] = self.i
 
-        for c in n.children():
+        for c in n.targets():
             nodes += self._DFS_prefix(c, n)
             self.i += 1
 
@@ -94,8 +94,8 @@ class Graph:
             x = queue.popleft()
             nodes.append(x)
 
-            for child in x.children():
-                queue.append(child)
+            for out in x.targets():
+                queue.append(out)
 
         return nodes
 
@@ -104,8 +104,8 @@ class Graph:
         """
 
         depth = 0
-        while node.parent() and node != self.root():
-            node = node.parent()[0]
+        while node.sources() and node != self.root():
+            node = node.sources()[0]
             depth += 1
 
         return depth
@@ -122,11 +122,17 @@ class Graph:
 
         return self._edges
 
-    def children(self, node):
+    def outedges(self, node):
         """
         """
 
-        return node.children()
+        return node.outedges()
+
+    def targets(self, node):
+        """
+        """
+
+        return node.targets()
 
     def add_node(self, label=""):
         """
