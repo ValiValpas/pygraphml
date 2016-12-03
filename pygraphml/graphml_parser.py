@@ -11,6 +11,7 @@ from xml.dom import minidom
 from . import Graph
 from . import Node
 from . import Edge
+from . import Hyperedge
 
 class GraphMLParser:
     """
@@ -155,6 +156,21 @@ class GraphMLParser:
                         print("Could not find node '%s' or '%s'." % (source, dest))
                     self.set_default_keys(e, "edge", keys)
                     self.parse_attributes(e, edge)
+
+        for hyperedge in graph.childNodes:
+            if isinstance(hyperedge, minidom.Element):
+                if hyperedge.tagName == "hyperedge":
+                    h = g.add_hyperedge()
+                    h['id'] = hyperedge.getAttribute('id')
+                    for endpoint in hyperedge.childNodes:
+                        if isinstance(endpoint, minidom.Element):
+                            if endpoint.tagName == "endpoint":
+                                node_id   = endpoint.getAttribute('node')
+                                direction = endpoint.getAttribute('type')
+                                g.add_endpoint_by_id(h, node_id, direction)
+
+                    self.set_default_keys(h, "hyperedge", keys)
+                    self.parse_attributes(h, hyperedge)
 
 
     def parse(self, fname):
