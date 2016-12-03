@@ -98,7 +98,7 @@ class GraphMLParser:
         
     def set_default_keys(self, obj, keytype, keys):
         for key in keys.values():
-            if key.getAttribute("for") == keytype and key.firstChild:
+            if ("for" not in key.attributes.keys() or key.getAttribute("for") == keytype) and key.firstChild:
                 default = key.getElementsByTagName("default")[0]
                 if default.firstChild:
                     obj[key.getAttribute("id")] = default.firstChild.data
