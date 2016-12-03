@@ -142,7 +142,15 @@ class GraphMLParser:
                 if edge.tagName == "edge":
                     source = edge.getAttribute('source')
                     dest = edge.getAttribute('target')
+                    directed = graph.getAttribute('edgedefault') == "directed"
+                    if "directed" in edge.attributes.keys():
+                        if edge.getAttribute('directed') == "true":
+                            directed = True;
+                        else:
+                            directed = False;
+
                     e = g.add_edge_by_id(source, dest)
+                    e.set_directed(directed)
                     if e is None:
                         print("Could not find node '%s' or '%s'." % (source, dest))
                     self.set_default_keys(e, "edge", keys)
