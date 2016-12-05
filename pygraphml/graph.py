@@ -7,6 +7,7 @@ from __future__ import print_function
 
 from . import Node
 from . import Edge
+from . import Hyperedge
 
 from collections import deque
 
@@ -25,6 +26,7 @@ class Graph:
 
         self._nodes = []
         self._edges = []
+        self._hyperedges = []
         self._root = None
         self._parent_node = parent
         self.directed = True
@@ -128,6 +130,9 @@ class Graph:
 
         return node.outedges()
 
+    def hyperedges(self, ):
+        return self._hyperedges
+
     def targets(self, node):
         """
         """
@@ -178,6 +183,17 @@ class Graph:
             return self.add_edge(n1, n2)
         else:
             return
+
+    def add_hyperedge(self):
+        h = Hyperedge()
+        self._hyperedges.append(h)
+        return h
+
+    def add_endpoint_by_id(self, hyperedge, id1, direction=None):
+        for n in self._nodes:
+            if n['id'] == id1:
+                hyperedge.add_endpoint(n, direction)
+                return n
 
     def set_root(self, node):
         """

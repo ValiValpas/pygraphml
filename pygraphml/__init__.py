@@ -10,7 +10,8 @@ from .item import Item
 from .point import Point
 from .node import Node
 from .edge import Edge
+from .hyperedge import Hyperedge
 from .graph import Graph
 from .graphml_parser import GraphMLParser
 
-__version__ = '2.2'
+__version__ = '3.0.0'
