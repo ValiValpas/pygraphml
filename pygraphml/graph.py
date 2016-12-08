@@ -42,6 +42,49 @@ class Graph:
     def parent_node(self, ):
         return self._parent_node
 
+    def sort(self, edges=None):
+        """
+        Implement Kahn's algorithm, which returns a topological sort.
+
+        :param edges: edges that are used for traversal
+        :return: list of nodes or None if graph is not a DAG
+        """
+
+        result = list()
+        start_nodes = list()
+        if edges is None:
+            edges = list(self._edges)
+
+        # initialise start nodes
+        for n in self.nodes():
+            if len(n.inedges()) == 0:
+                start_nodes.append(n)
+
+        while len(start_nodes) > 0:
+            n = start_nodes.pop()
+            result.append(n)
+
+            # iterate target nodes
+            for e in n.outedges():
+                # remove edge (virtually)
+                if e in edges:
+                    edges.remove(e)
+
+                indegree = 0
+                for f in e.target().inedges():
+                    if f in edges:
+                        indegree += 1
+
+                # if the target node has no other incoming edge
+                if indegree == 0:
+                    start_nodes.append(e.target())
+
+        if len(edges) > 0:
+            # graph has at least one cycle
+            return None
+
+        return result
+
     def DFS_prefix(self, root=None):
         """
         Depth-first search.
