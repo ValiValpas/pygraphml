@@ -151,6 +151,7 @@ class GraphMLParser:
                             directed = False;
 
                     e = g.add_edge_by_id(source, dest)
+                    e['id'] = edge.getAttribute('id')
                     e.set_directed(directed)
                     if e is None:
                         print("Could not find node '%s' or '%s'." % (source, dest))
