@@ -96,24 +96,32 @@ class GraphMLParser:
 
         f = open(fname, 'w')
         f.write(doc.toprettyxml(indent = '    '))
+
+    def get_all_data(self, node, include_tag=False):
+        if node.nodeType ==  node.TEXT_NODE:
+            return node.data
+        else:
+            data = ""
+            for child_node in node.childNodes:
+                data += self.get_all_data(child_node, include_tag=True)
+            if include_tag:
+                return "<%s>%s</%s>" % (node.tagName,
+                                        data,
+                                        node.tagName)
+            else:
+                return data
         
     def set_default_keys(self, obj, keytype, keys):
         for key in keys.values():
             if ("for" not in key.attributes.keys() or key.getAttribute("for") == keytype) and key.firstChild:
                 default = key.getElementsByTagName("default")[0]
-                if default.firstChild:
-                    obj[key.getAttribute("id")] = default.firstChild.data
-                else:
-                    obj[key.getAttribute("id")] = ""
+                obj[key.getAttribute("id")] = self.get_all_data(default)
                 
     def parse_attributes(self, obj, element):
         for attr in element.childNodes:
             if isinstance(attr, minidom.Element):
                 if attr.tagName == "data":
-                    if attr.firstChild:
-                        obj[attr.getAttribute("key")] = attr.firstChild.data
-                    else:
-                        obj[attr.getAttribute("key")] = ""
+                    obj[attr.getAttribute("key")] = self.get_all_data(attr)
         
     def parse_graph(self, source, target, keys):
         """
