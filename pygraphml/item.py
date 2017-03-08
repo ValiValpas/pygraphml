@@ -42,7 +42,10 @@ class Item(object):
         """
         """
 
-        self.attr[name] = Attribute(name, value)
+        if name in self.attr:
+            self.attr[name].set_value(value)
+        else:
+            self.attr[name] = Attribute(name, value)
 
     def __getitem__(self, name):
         """

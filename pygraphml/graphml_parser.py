@@ -97,9 +97,14 @@ class GraphMLParser:
         f = open(fname, 'w')
         f.write(doc.toprettyxml(indent = '    '))
 
-    def get_all_data(self, node, include_tag=False):
-        if node.nodeType ==  node.TEXT_NODE:
-            return node.data
+    def get_all_data(self, node, datatype='string', include_tag=False):
+        if node.nodeType == node.TEXT_NODE:
+            if datatype == 'integer' or datatype == 'int':
+                return int(node.data)
+            elif datatype  == 'float':
+                return float(node.data)
+            else:
+                return str(node.data)
         else:
             data = ""
             for child_node in node.childNodes:
@@ -115,7 +120,7 @@ class GraphMLParser:
         for key in keys.values():
             if ("for" not in key.attributes.keys() or key.getAttribute("for") == keytype) and key.firstChild:
                 default = key.getElementsByTagName("default")[0]
-                obj[key.getAttribute("id")] = self.get_all_data(default)
+                obj[key.getAttribute("id")] = self.get_all_data(default, key.getAttribute('attr.type'))
                 
     def parse_attributes(self, obj, element):
         for attr in element.childNodes:
