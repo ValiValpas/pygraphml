@@ -99,22 +99,23 @@ class GraphMLParser:
 
     def get_all_data(self, node, datatype='string', include_tag=False):
         if node.nodeType == node.TEXT_NODE:
-            if datatype == 'integer' or datatype == 'int':
-                return int(node.data)
-            elif datatype  == 'float':
-                return float(node.data)
-            else:
-                return str(node.data)
+            data = node.data
         else:
             data = ""
             for child_node in node.childNodes:
                 data += self.get_all_data(child_node, include_tag=True)
             if include_tag:
+                assert(datatype == 'string')
                 return "<%s>%s</%s>" % (node.tagName,
                                         data,
                                         node.tagName)
-            else:
-                return data
+
+        if datatype == 'integer' or datatype == 'int':
+            return int(data)
+        elif datatype  == 'float':
+            return float(data)
+        else:
+            return str(data)
         
     def set_default_keys(self, obj, keytype, keys):
         for key in keys.values():

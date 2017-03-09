@@ -20,7 +20,7 @@ class Attribute:
     def set_value(self, value):
         if isinstance(self.value, int):
             self.value = int(value)
-        elif isinstance(self.value, str):
+        elif isinstance(self.value, str) or isinstance(self.value, unicode):
             self.value = str(value)
         elif isinstance(self.value, float):
             self.value = float(value)
