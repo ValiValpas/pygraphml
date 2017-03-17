@@ -16,6 +16,7 @@ class Attribute:
 
         self.name = name
         self.value = value
+        self.type = type(value).__name__
 
     def set_value(self, value):
         if isinstance(self.value, int):
